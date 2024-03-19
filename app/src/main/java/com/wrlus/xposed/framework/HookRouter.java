@@ -2,18 +2,13 @@ package com.wrlus.xposed.framework;
 
 import android.util.Log;
 
-import com.wrlus.xposed.hook.custom.ByteHookAweme;
-import com.wrlus.xposed.hook.priv.ByteHookBridgeSdk;
-import com.wrlus.xposed.hook.priv.ByteHookIesJsBridge;
-import com.wrlus.xposed.hook.priv.ByteHookJsBridge2;
-import com.wrlus.xposed.hook.priv.ByteHookXBridge2;
-import com.wrlus.xposed.hook.priv.ByteHookXBridge3;
-import com.wrlus.xposed.hook.universal.HookWebView;
+import com.wrlus.xposed.hook.universal.HookVCam;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import de.robv.android.xposed.IXposedHookLoadPackage;
+import de.robv.android.xposed.XposedBridge;
 import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 /**
@@ -24,8 +19,7 @@ public class HookRouter implements IXposedHookLoadPackage {
     private static final List<Class<? extends HookInterface>> hookers = new ArrayList<>();
 
     static {
-//        hookers.add(ByteHookAweme.class);
-        hookers.add(HookWebView.class);
+        hookers.add(HookVCam.class);
     }
 
     @Override
@@ -36,10 +30,10 @@ public class HookRouter implements IXposedHookLoadPackage {
             try {
                 HookInterface hookInterface = hooker.newInstance();
                 Log.d(TAG, "Load " +
-                        hookInterface.getClass().getCanonicalName());
+                        hookInterface.getClass().getName());
                 hookInterface.onHookPackage(loadPackageParam);
             } catch (ReflectiveOperationException e) {
-                e.printStackTrace();
+                XposedBridge.log(e);
             }
         }
     }

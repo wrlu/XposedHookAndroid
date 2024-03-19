@@ -1,6 +1,5 @@
 package com.wrlus.xposed.hook.universal;
 
-import android.os.Build;
 import android.util.Log;
 import android.webkit.ConsoleMessage;
 import android.webkit.JsPromptResult;
