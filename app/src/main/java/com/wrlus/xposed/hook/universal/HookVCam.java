@@ -161,17 +161,17 @@ public class HookVCam implements HookInterface {
                                     "onPreviewFrame data failed !!!");
                         }
                     }
-//                    @Override
-//                    protected void afterHookedMethod(MethodHookParam param) {
-//                        XposedBridge.log("After onPreviewFrame");
-//                        byte[] data = (byte[]) param.args[0];
-//                        Camera camera = (Camera) param.args[1];
-//                        Camera.Size previewSize = camera
-//                                .getParameters().getPreviewSize();
-//                        savePreviewFrameImage(data,
-//                                previewSize.width, previewSize.height,
-//                                dumpFrameOutput);
-//                    }
+                    @Override
+                    protected void afterHookedMethod(MethodHookParam param) {
+                        XposedBridge.log("After onPreviewFrame");
+                        byte[] data = (byte[]) param.args[0];
+                        Camera camera = (Camera) param.args[1];
+                        Camera.Size previewSize = camera
+                                .getParameters().getPreviewSize();
+                        savePreviewFrameImage(data,
+                                previewSize.width, previewSize.height,
+                                dumpFrameOutput);
+                    }
                 });
     }
 

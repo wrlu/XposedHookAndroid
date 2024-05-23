@@ -2,7 +2,7 @@ package com.wrlus.xposed.framework;
 
 import android.util.Log;
 
-import com.wrlus.xposed.hook.universal.HookVCam;
+import com.wrlus.xposed.hook.universal.HookShellCommand;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +19,7 @@ public class HookRouter implements IXposedHookLoadPackage {
     private static final List<Class<? extends HookInterface>> hookers = new ArrayList<>();
 
     static {
-        hookers.add(HookVCam.class);
+        hookers.add(HookShellCommand.class);
     }
 
     @Override

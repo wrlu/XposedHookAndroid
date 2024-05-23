@@ -2,11 +2,15 @@ package com.wrlus.xposed.hook.custom;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
+import android.os.Binder;
+import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.wrlus.xposed.framework.HookInterface;
 
+import java.io.FileDescriptor;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;
@@ -16,8 +20,8 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 /**
  * Created by wrlu on 2023/2/3.
  */
-public class HookDarkTech implements HookInterface {
-    private static final String TAG = "HookDarkTech";
+public class HookAppList implements HookInterface {
+    private static final String TAG = "HookAppList";
 
     @Override
     public void onHookPackage(final XC_LoadPackage.LoadPackageParam loadPackageParam) {
@@ -27,15 +31,16 @@ public class HookDarkTech implements HookInterface {
                 "com.huawei.webview".equals(packageName)) {
             return;
         }
-        try {
-            hookAOSPAppList(packageName);
-        } catch (Exception e) {
-            Log.e(TAG, e.getLocalizedMessage());
-            e.printStackTrace();
+        if (!packageName.equals("android")) {
+            try {
+                hookAOSPAppListInterface(packageName);
+            } catch (Exception e) {
+                Log.e(TAG, "hookAOSPAppListInterface", e);
+            }
         }
     }
 
-    public static void hookAOSPAppList(final String packageName) {
+    public static void hookAOSPAppListInterface(final String packageName) {
         XposedHelpers.findAndHookMethod("android.content.pm.IPackageManager$Stub$Proxy",
                 null, "getPackagesForUid",
                 int.class,
