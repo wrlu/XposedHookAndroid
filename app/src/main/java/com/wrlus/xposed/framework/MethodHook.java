@@ -140,7 +140,7 @@ public class MethodHook {
                 statusMap.put(methodHook, Status.FAILED_NO_SUCH_METHOD);
             }
         }
-        if (statusMap.size() != 0) {
+        if (!statusMap.isEmpty()) {
             ClassSearchHook.Builder methodSearchHooker = new MethodSearchHook.Builder()
                     .setClassName(className)
                     .setClassLoader(classLoader);

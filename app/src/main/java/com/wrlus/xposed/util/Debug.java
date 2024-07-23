@@ -13,7 +13,7 @@ public class Debug {
             StackTraceElement[] originElements = e.getStackTrace();
             List<StackTraceElement> finalElements = new ArrayList<>(originElements.length);
             for (StackTraceElement originElement : originElements) {
-                if (stackTraceClassFilter(originElement.getClassName())) {
+                if (stackTraceFilter(originElement)) {
                     continue;
                 }
                 finalElements.add(originElement);
@@ -23,7 +23,9 @@ public class Debug {
         }
     }
 
-    public static boolean stackTraceClassFilter(String className) {
-        return className.contains("xposed") || className.equals("LSPHooker_");
+    public static boolean stackTraceFilter(StackTraceElement element) {
+        return element.getClassName().contains("Xposed") ||
+                element.getClassName().contains("LSPHooker_") ||
+                element.getClassName().equals("J") && element.getMethodName().equals("callback");
     }
 }

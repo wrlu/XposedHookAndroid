@@ -20,8 +20,11 @@ public class PrintCallback extends XC_MethodHook {
     private final String[] parameterNames;
     private final Integer[] parameterPrintPolicies;
     private final int retValuePrintPolicy;
+    private final int thisObjectPrintPolicy;
     private final Map<String, Method> specPrintMethodMap;
     private final Method retValueSpecPrintMethod;
+    private final Method specThisObjectPrintMethod;
+    private final boolean isPrintStack;
 
     public static class HookTime {
         public static final int BEFORE = 1;
@@ -32,6 +35,7 @@ public class PrintCallback extends XC_MethodHook {
         public static final int DEFAULT = 1;
         public static final int CLASSNAME = 1 << 1;
         public static final int SPECIFIC = 1 << 2;
+        public static final int NONE = 1 << 3;
     }
 
     protected PrintCallback(Builder builder) {
@@ -40,8 +44,11 @@ public class PrintCallback extends XC_MethodHook {
         this.parameterNames = builder.parameterNames.toArray(new String[0]);
         this.parameterPrintPolicies = builder.parameterPrintPolicies.toArray(new Integer[0]);
         this.retValuePrintPolicy = builder.retValuePrintPolicy;
+        this.thisObjectPrintPolicy = builder.thisObjectPrintPolicy;
         this.specPrintMethodMap = builder.specPrintMethodMap;
         this.retValueSpecPrintMethod = builder.retValueSpecPrintMethod;
+        this.specThisObjectPrintMethod = builder.specThisObjectPrintMethod;
+        this.isPrintStack = builder.isPrintStack;
     }
 
     public static class Builder {
@@ -50,15 +57,20 @@ public class PrintCallback extends XC_MethodHook {
         private final List<String> parameterNames;
         private final List<Integer> parameterPrintPolicies;
         private int retValuePrintPolicy;
+        private int thisObjectPrintPolicy;
         private final Map<String, Method> specPrintMethodMap;
         private Method retValueSpecPrintMethod;
+        private Method specThisObjectPrintMethod;
+        private boolean isPrintStack;
 
         public Builder() {
             parameterNames = new ArrayList<>();
             parameterPrintPolicies = new ArrayList<>();
             retValuePrintPolicy = PrintPolicy.DEFAULT;
+            thisObjectPrintPolicy = PrintPolicy.DEFAULT;
             specPrintMethodMap = new HashMap<>();
             retValueSpecPrintMethod = null;
+            isPrintStack = true;
         }
 
         public Builder addParameterPrint(String parameterName) {
@@ -84,6 +96,21 @@ public class PrintCallback extends XC_MethodHook {
         public Builder setSpecReturnValuePrint(Method specPrintMethod) {
             retValueSpecPrintMethod = specPrintMethod;
             return setReturnValuePrint(PrintPolicy.SPECIFIC);
+        }
+
+        public Builder setThisObjectPrint(int printPolicy) {
+            thisObjectPrintPolicy = printPolicy;
+            return this;
+        }
+
+        public Builder setSpecThisObjectPrint(Method specPrintMethod) {
+            specThisObjectPrintMethod = specPrintMethod;
+            return setThisObjectPrint(PrintPolicy.SPECIFIC);
+        }
+
+        public Builder setPrintStack(boolean isPrint) {
+            isPrintStack = isPrint;
+            return this;
         }
 
         public Builder setTag(String tag) {
@@ -115,7 +142,7 @@ public class PrintCallback extends XC_MethodHook {
         }
     }
 
-    protected void onMethodHooked(MethodHookParam param, boolean canPrintRetValue) {
+    void onMethodHooked(MethodHookParam param, boolean canPrintRetValue) {
         StringBuilder printStr = new StringBuilder();
         printStr.append(param.method.getDeclaringClass().getCanonicalName());
         printStr.append("#");
@@ -123,9 +150,38 @@ public class PrintCallback extends XC_MethodHook {
         printStr.append(": ");
 
         printStr.append("thisObject");
-        Object thisValue = Utils.checkNonNull(param.thisObject);
         printStr.append(" = [");
-        printStr.append(thisValue);
+        if (param.thisObject != null) {
+            if ((thisObjectPrintPolicy & PrintPolicy.DEFAULT) ==
+                    PrintPolicy.DEFAULT) {
+                printStr.append("value: ");
+                printStr.append(param.thisObject);
+                printStr.append(" ");
+            }
+            if ((thisObjectPrintPolicy & PrintPolicy.CLASSNAME) ==
+                    PrintPolicy.CLASSNAME) {
+                printStr.append("type: ");
+                printStr.append(param.thisObject.getClass().getName());
+                printStr.append(" ");
+            }
+            if ((thisObjectPrintPolicy & PrintPolicy.SPECIFIC) ==
+                    PrintPolicy.SPECIFIC) {
+                if (specThisObjectPrintMethod != null) {
+                    try {
+                        Object specResult = specThisObjectPrintMethod.invoke(thisObjectPrintPolicy);
+                        printStr.append("specific: ");
+                        printStr.append(specResult);
+                        printStr.append(" ");
+                    } catch (ReflectiveOperationException e) {
+                        Log.w(TAG, "Unable to call specific print method for return value.");
+                    }
+                } else {
+                    Log.w(TAG, "Missing specific print method for thisObject.");
+                }
+            }
+        } else {
+            printStr.append("static");
+        }
         printStr.append("]; ");
 
         for (int i = 0; i < parameterNames.length; ++i) {
@@ -201,6 +257,8 @@ public class PrintCallback extends XC_MethodHook {
             printStr.append("; ");
         }
         Log.i(tag, printStr.toString());
-        Debug.printStackTrace(tag);
+        if (isPrintStack) {
+            Debug.printStackTrace(tag);
+        }
     }
 }
