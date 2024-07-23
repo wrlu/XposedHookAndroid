@@ -24,7 +24,8 @@ public class Debug {
     }
 
     public static boolean stackTraceFilter(StackTraceElement element) {
-        return element.getClassName().contains("Xposed") ||
+        return element.getClassName().contains("com.wrlus.xposed") ||
+                element.getClassName().contains("Xposed") ||
                 element.getClassName().contains("LSPHooker_") ||
                 element.getClassName().equals("J") && element.getMethodName().equals("callback");
     }
