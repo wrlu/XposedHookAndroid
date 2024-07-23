@@ -1,16 +1,12 @@
-package com.wrlus.xposed.hook.custom;
+package com.wrlus.xposed.hook.universal;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageInfo;
-import android.os.Binder;
-import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.wrlus.xposed.framework.HookInterface;
 
-import java.io.FileDescriptor;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import de.robv.android.xposed.XC_MethodHook;

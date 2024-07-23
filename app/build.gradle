@@ -3,7 +3,7 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 33
     defaultConfig {
-        applicationId "com.wrlus.xposed"
+        applicationId "com.wrlus.lsposed"
         minSdkVersion 26
         targetSdkVersion 33
         versionCode 1
@@ -16,7 +16,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
-    namespace "com.wrlus.xposed"
+    namespace "com.wrlus.lsposed"
 }
 
 dependencies {
