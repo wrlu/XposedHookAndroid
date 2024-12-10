@@ -20,7 +20,7 @@ public class HookSensor implements HookInterface {
         hookSensor(loadPackageParam.classLoader);
     }
 
-    private void hookSensor(ClassLoader classLoader) {
+    private static void hookSensor(ClassLoader classLoader) {
         MethodHook oldRegister = new MethodHook.Builder(
                 "android.hardware.SensorManager", classLoader)
                 .setMethodName("registerListener")

@@ -142,7 +142,7 @@ public class PrintCallback extends XC_MethodHook {
         }
     }
 
-    void onMethodHooked(MethodHookParam param, boolean canPrintRetValue) {
+    public void onMethodHooked(MethodHookParam param, boolean canPrintRetValue) {
         StringBuilder printStr = new StringBuilder();
         printStr.append(param.method.getDeclaringClass().getCanonicalName());
         printStr.append("#");
